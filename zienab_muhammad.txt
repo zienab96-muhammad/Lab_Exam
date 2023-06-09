@@ -125,7 +125,7 @@ draw1 + geom_point()
 Histo <- ggplot(examData, aes(x = height)) +
   
 geom_histogram(binwidth = 5, color = "black", fill = "green", alpha = .9)
-
+Histo + geom_histogram()
 #Bar
 Bar <- ggplot(examData, aes(x = overweight))
 Bar + geom_bar()
