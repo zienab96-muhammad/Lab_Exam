@@ -89,11 +89,12 @@ str(examData)
 #Multiple Imputation Technique(mice)..........
 
 examData[ ! complete.cases(examData), ]
-clean_data <- mice(examData , m = 5 , meth = c("","","pmm","pmm","") , maxit = 1
-clean_data$imp
-#Complete the missing values
-new<-complete(clean_data ,5)
-new
+
+pre.imp <- mice(examData , m = 5 , meth = c("","","pmm","","") , maxit = 1)
+
+pre.imp$imp
+dfnew<-complete(pre.imp,4)
+examData
 #get all row with missing data
 is.na(examData)
 
