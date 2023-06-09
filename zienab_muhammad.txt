@@ -1,0 +1,130 @@
+library(mice)
+library(ggplot2)
+library(tidyverse)
+library(tidyr)
+install.packages("tidyr")
+#the other packages i install it from the app
+
+#read data
+examData <- read.csv('G4_howell.csv')
+examData
+str(examData)
+#Get data frame dimensions.
+dim(examData)
+
+#Dataset Sense......
+
+# Column names.
+colnames(examData)
+
+str(examData)
+summary(examData)
+
+
+#Data Slicing....
+
+#Get first/last 6 rows.
+head(examData)
+tail(examData)
+
+#Remove  columns(1,2) from dataset.
+newexamData <- (examData[ ,- c(1,2) ])
+newexamData
+
+#Get specific rows and columns.
+specific <- examData[ c(1:10), c("age", "sex")]
+specific
+#Select specific item.
+item <- examData[ 2, 1 ]
+item
+
+#Filtering.
+filter1 <- examData[examData$sex =='Male', ]
+
+filter1
+filter2 <- examData[examData$weight > 20 , c(1, 2)]
+filter2 
+#sorting
+sortIncome1 <- examData[order(examData$age) , ]
+sortIncome1
+ 
+sortIncome3 <- examData[order(examData$age,
+                              examData$sex) , ]
+sortIncome3
+#Re-coding.....
+#Delete a column.
+examData$height <- NULL
+examData
+
+examData$sex[examData$sex == 'F']<-'Female'
+examData$sex[examData$sex == 'M']<-'Male'
+examData
+
+
+#e-code with multicondition.
+examData$overweight[examData$weight > 45 ] =T
+examData$overweight[examData$weight<=45] = F
+examData
+
+
+#Dealing with Missing Data....
+examData
+complete.cases(examData)
+examData
+
+examData[ ! complete.cases(examData), ]
+
+examData
+complete.cases(examData)
+
+
+# Remove kg from the weight column
+examData$weight <- gsub("kg", "", examData$weight)
+examData
+
+# Converting variables
+examData$weight<-as.numeric(examData$weight)
+str(examData)
+
+#Multiple Imputation Technique(mice)..........
+
+examData[ ! complete.cases(examData), ]
+clean_data <- mice(examData , m = 5 , meth = c("","","pmm","pmm","") , maxit = 1
+clean_data$imp
+#Complete the missing values
+new<-complete(clean_data ,5)
+new
+#get all row with missing data
+is.na(examData)
+
+#Intention-to-Treat (ITT) Analysis...........
+
+#using median 
+examData[is.na(examData$wieght),]
+clean <- drop_na(examData)
+clean
+
+med<-median(examData[examData$sex== 'Female','wieght'],na.rm = T)
+examData[is.na(examData$wieght) & examData$sex == 'Female', "wieght"] <-med
+
+med2<-median(examData[examData$gender == 'Male','wieght'],na.rm = T)
+examData[is.na(examData$wieght) & examData$sex == 'Male', "wieght"] <- med2
+
+
+#visualization.........
+
+#scatter
+draw1 <- ggplot(examData)
+draw1 <- ggplot(examData, aes(x=weight, y=age))
+draw1
+draw1 + geom_point() 
+
+
+#histogram
+Histo <- ggplot(examData, aes(x = height)) +
+  
+geom_histogram(binwidth = 5, color = "black", fill = "green", alpha = .9)
+
+#Bar
+Bar <- ggplot(examData, aes(x = overweight))
+Bar + geom_bar()
